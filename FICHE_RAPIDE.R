@@ -23,7 +23,8 @@ for(i in 1:length(media)){
 #Standardisation des taille d'image
 data$IMG_URL = str_replace(data$IMG_URL,"original","medium")
 
-
+#Trier par ordre alphabéthique les noms
+data = arrange(data,SC_NAME)
 
 con <- file("FICHE_RAPIDE.Rmd", open = "wt", encoding = "UTF-8")
 sink(con,split=T)
