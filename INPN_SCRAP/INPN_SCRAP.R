@@ -7,9 +7,34 @@ setwd(WD)
 if (!require("rvest")) {install.packages("rvest")}+library("rvest") # API GBIF
 if (!require("tidyverse")) {install.packages("tidyverse")}+library("tidyverse")
 if (!require("xlsx")) {install.packages("xlsx")}+library("xlsx") # API GBIF
+if (!require("xlsx")) {install.packages("xlsx")}+library("xlsx") # API GBIF
 
-tabESPbrut = read.table("clipboard")
-tabESPbrut$cd_nom = tabESPbrut$V1
+
+SILENE_3CAPS <- readxl::read_excel("C:/Users/MTDA-029/Downloads/SILENE 3CAPS.xlsx")
+SILENE_3CAPS$bing = 'ERREUR'
+for(i in 1:nrow(SILENE_3CAPS)){
+  cat(i,"\n")
+  if(is.na(SILENE_3CAPS$`NOM VERNACULAIRE`[i])){
+    EspURL = SILENE_3CAPS$nom_valide[i]
+  }else{
+    EspURL = SILENE_3CAPS$`NOM VERNACULAIRE`[i]
+  }
+  url <- paste0("https://www.bing.com/search?q=Statut+de+menace+de+",gsub(" ","+",EspURL),"+en+france+et+en+PACA")
+  url=  iconv(url,to = "ASCII//TRANSLIT")
+   page <- read_html(url)
+   titre = "ERREUR"
+  titre <- page %>% html_nodes(".b_caption > .b_algoSlug") %>% html_text()
+  if(length(titre)>0){  SILENE_3CAPS$bing[i] = titre}
+
+}
+
+
+
+
+
+
+
+
 
 for(i in 470:nrow(tabESPbrut)){
   cat(i,"\n")
@@ -24,7 +49,7 @@ for(i in 470:nrow(tabESPbrut)){
 
 tabESPbrut = data.frame(tabESPbrut)
 
-SILENE_3CAPS <- read_excel("C:/Users/MTDA-029/Downloads/SILENE 3CAPS.xlsx")
+
 
 
 SILENE_3CAPS = left_join(tabESPbrut,SILENE_3CAPS,by=c("cd_nom"="cd_ref"))
@@ -42,4 +67,4 @@ for(i in 1:nrow(SILENE_3CAPS)){
 }
 
 
-write.xlsx(SILENE_3CAPS,"SILENE_3CAPS_AS2.xlsx",row.names = FALSE)
+write.xlsx(SILENE_3CAPS,"SILENE_3CAPS_AS2.xlsx")
